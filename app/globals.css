@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* ── Hogwarts / Parchment color palette ── */
+@theme inline {
+  --color-hogwarts:       #1a1a2e;   /* deep navy */
+  --color-hogwarts-dark:  #12122a;
+  --color-hogwarts-light: #5a5a82;
+  --color-parchment:      #f5f0e8;   /* warm off-white */
+  --color-parchment-dark: #e8dfc8;
+  --color-gold:           #c8a84b;   /* antique gold */
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, monospace;
+}
+
+/* ── Base reset ── */
+html, body {
+  height: 100%;
+  background-color: #f5f0e8;
+  color: #1a1a2e;
+}
+
+/* ── Slide-up animation for MaraudeCard ── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px) translateX(-50%); }
+  to   { opacity: 1; transform: translateY(0)   translateX(-50%); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out both;
+}
+
+/* ── Leaflet overrides ── */
+.leaflet-container {
+  font-family: inherit;
+  background: #e8e0cf;
+}
+
+/* Hide the Leaflet default blue outline on focus */
+.leaflet-container:focus {
+  outline: none;
+}
