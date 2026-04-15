@@ -30,7 +30,10 @@ export default function HomePage() {
   useEffect(() => {
     fetch("/api/maraudes")
       .then((r) => r.json())
-      .then((data) => { if (data.maraudes?.length) setMaraudes(data.maraudes); })
+      // N'écraser les données statiques que si elles viennent d'une source
+      // externe (Google Sheets). La source "static" est déjà chargée via
+      // l'import ci-dessus et est toujours à jour après un déploiement.
+      .then((data) => { if (data.source === "sheets" && data.maraudes?.length) setMaraudes(data.maraudes); })
       .catch(() => {});
   }, []);
 

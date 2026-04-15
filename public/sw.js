@@ -6,7 +6,7 @@
  *   - Hors-ligne        → page /offline servie depuis le cache
  */
 
-const CACHE_NAME = "cdm-v2";
+const CACHE_NAME = "cdm-v3";
 const OFFLINE_URL = "/offline";
 
 // Ressources pré-cachées à l'installation

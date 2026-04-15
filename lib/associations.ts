@@ -11,6 +11,12 @@ export const ASSOCIATION_COLORS: Record<string, string> = {
   "La Mie de Pain": "#c62828",
   Lazare: "#283593",
   "Fraternité Notre-Dame": "#2e7d32",
+  // Nouvelles associations
+  "CSVP – Diocèse de Paris": "#3e2723",
+  "La Rue Tourne": "#004d40",
+  "Li'llah": "#311b92",
+  "Communauté Sant'Egidio": "#880e4f",
+  "La Bagagerie d'Antigel": "#37474f",
 };
 
 export const ALL_ASSOCIATIONS = Object.keys(ASSOCIATION_COLORS);
