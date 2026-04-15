@@ -7,6 +7,14 @@ export type Jour =
   | "Samedi"
   | "Dimanche";
 
+export type TypeAide =
+  | "Repas"
+  | "Vêtements"
+  | "Écoute"
+  | "Accompagnement"
+  | "Soins"
+  | "Hébergement";
+
 export interface Maraude {
   id: number;
   nom: string;
@@ -18,4 +26,11 @@ export interface Maraude {
   horaire: string;
   contact: string;
   secteur?: string;
+  // Champs enrichis
+  site_web?: string;
+  benevole_url?: string;
+  types_aide?: TypeAide[];
+  pmr?: boolean;       // Accessible PMR
+  langues?: string[];  // Langues parlées
+  description?: string;
 }
