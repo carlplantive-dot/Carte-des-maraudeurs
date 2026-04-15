@@ -16,6 +16,7 @@ export const ASSOCIATION_COLORS: Record<string, string> = {
   "La Rue Tourne": "#004d40",
   "Li'llah": "#311b92",
   "Communauté Sant'Egidio": "#880e4f",
+  "La Bagagerie d'Antigel": "#37474f",
 };
 
 export const ALL_ASSOCIATIONS = Object.keys(ASSOCIATION_COLORS);
