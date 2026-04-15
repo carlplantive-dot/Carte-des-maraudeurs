@@ -21,8 +21,9 @@ export default function MaraudeCard({ maraude, onClose }: MaraudeCardProps) {
   const color = ASSOCIATION_COLORS[maraude.association] ?? "#1a1a2e";
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-md px-4 sm:px-0">
-      <div className="bg-parchment border border-gold rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+    /* Mobile: full-width bottom sheet. Desktop: floating card */
+    <div className="fixed bottom-0 sm:bottom-6 left-0 sm:left-1/2 sm:-translate-x-1/2 z-[1000] w-full sm:max-w-md sm:px-0">
+      <div className="bg-parchment border-t sm:border border-gold rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden animate-slide-up-drawer sm:animate-slide-up">
 
         {/* Header */}
         <div className="px-5 py-3 flex items-start justify-between" style={{ backgroundColor: color }}>
@@ -43,8 +44,8 @@ export default function MaraudeCard({ maraude, onClose }: MaraudeCardProps) {
           </button>
         </div>
 
-        {/* Body */}
-        <div className="px-5 py-4 space-y-3 text-hogwarts-dark">
+        {/* Body — scrollable si contenu long */}
+        <div className="px-5 py-4 space-y-3 text-hogwarts-dark overflow-y-auto max-h-[55vh] sm:max-h-[60vh]">
 
           {/* Description */}
           {maraude.description && (

@@ -30,6 +30,14 @@ html, body {
   animation: slide-up 0.25s ease-out both;
 }
 
+@keyframes slide-up-drawer {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-slide-up-drawer {
+  animation: slide-up-drawer 0.28s ease-out both;
+}
+
 /* ── Leaflet overrides ── */
 .leaflet-container {
   font-family: inherit;
