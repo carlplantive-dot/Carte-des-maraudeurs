@@ -11,6 +11,7 @@ import MaraudeList from "@/components/MaraudeList";
 import AssociationFilter from "@/components/AssociationFilter";
 import FilterDrawer from "@/components/FilterDrawer";
 import { ASSOCIATION_COLORS, ALL_ASSOCIATIONS } from "@/lib/associations";
+import { isEnSaison, isEnCours } from "@/lib/time";
 
 const Map = dynamic(() => import("@/components/Map"), {
   ssr: false,
@@ -47,8 +48,10 @@ export default function HomePage() {
   const mapInstanceRef = useRef<L.Map | null>(null);
 
   // ── Liste filtrée ─────────────────────────────────────────────────────────
+  const currentMonth = useMemo(() => new Date().getMonth() + 1, []);
+
   const filtered = useMemo(() => {
-    let list = maraudes;
+    let list = maraudes.filter((m) => isEnSaison(m, currentMonth));
     if (selectedJour) list = list.filter((m) => m.jours.includes(selectedJour));
     if (selectedAssos.length > 0) list = list.filter((m) => selectedAssos.includes(m.association));
     if (search.trim()) {
@@ -62,7 +65,7 @@ export default function HomePage() {
       );
     }
     return list;
-  }, [maraudes, selectedJour, selectedAssos, search]);
+  }, [maraudes, currentMonth, selectedJour, selectedAssos, search]);
 
   const activeFilterCount = (selectedJour ? 1 : 0) + selectedAssos.length;
 

@@ -2,6 +2,7 @@
 
 import { Maraude } from "@/types/maraude";
 import { ASSOCIATION_COLORS } from "@/lib/associations";
+import { isEnCours } from "@/lib/time";
 
 interface MaraudeListProps {
   maraudes: Maraude[];
@@ -56,6 +57,7 @@ export default function MaraudeList({
           maraudes.map((m) => {
             const color = ASSOCIATION_COLORS[m.association] ?? "#C0622F";
             const isSelected = m.id === selectedId;
+            const enCours = isEnCours(m);
             return (
               <button
                 key={m.id}
@@ -69,10 +71,18 @@ export default function MaraudeList({
                   <div className="w-1.5 flex-shrink-0" style={{ backgroundColor: color }} />
 
                   <div className="flex-1 px-3 py-3 min-w-0">
-                    {/* Nom + flèche */}
+                    {/* Nom + indicateur en cours + flèche */}
                     <div className="flex items-start justify-between gap-2">
                       <p className="text-sm font-bold text-warm-dark leading-snug flex-1">{m.nom}</p>
-                      <span className="text-warm-border text-base flex-shrink-0 mt-0.5 font-light">›</span>
+                      <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+                        {enCours && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-700 text-[9px] font-bold rounded-full border border-green-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                            En cours
+                          </span>
+                        )}
+                        <span className="text-warm-border text-base font-light">›</span>
+                      </div>
                     </div>
 
                     {/* Badge association */}

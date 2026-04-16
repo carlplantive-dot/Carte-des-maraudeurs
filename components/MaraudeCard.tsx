@@ -2,6 +2,7 @@
 
 import { Maraude } from "@/types/maraude";
 import { ASSOCIATION_COLORS } from "@/lib/associations";
+import { isEnCours } from "@/lib/time";
 
 interface MaraudeCardProps {
   maraude: Maraude;
@@ -19,6 +20,7 @@ const TYPE_AIDE_ICONS: Record<string, string> = {
 
 export default function MaraudeCard({ maraude, onClose }: MaraudeCardProps) {
   const color = ASSOCIATION_COLORS[maraude.association] ?? "#C0622F";
+  const enCours = isEnCours(maraude);
 
   return (
     <div className="fixed bottom-0 sm:bottom-6 left-0 sm:left-1/2 sm:-translate-x-1/2 z-[1000] w-full sm:max-w-md">
@@ -32,9 +34,17 @@ export default function MaraudeCard({ maraude, onClose }: MaraudeCardProps) {
         {/* Bandeau coloré */}
         <div className="px-5 py-4 flex items-start justify-between" style={{ backgroundColor: color }}>
           <div className="flex-1 min-w-0">
-            <span className="inline-block px-2 py-0.5 bg-white/25 text-white text-[10px] font-semibold rounded-full mb-1.5">
-              {maraude.association}
-            </span>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="inline-block px-2 py-0.5 bg-white/25 text-white text-[10px] font-semibold rounded-full">
+                {maraude.association}
+              </span>
+              {enCours && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-500/90 text-white text-[10px] font-bold rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse inline-block" />
+                  En cours
+                </span>
+              )}
+            </div>
             <h2 className="text-white font-bold text-base leading-snug">{maraude.nom}</h2>
           </div>
           <button
