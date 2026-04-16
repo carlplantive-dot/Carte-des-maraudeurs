@@ -97,12 +97,12 @@ export default function Map({
         const count = c.getChildCount();
         return L.divIcon({
           html: `<div style="
-            background:#1a1a2e;color:#c8a84b;
+            background:#C0622F;color:#fff;
             width:36px;height:36px;border-radius:50%;
             display:flex;align-items:center;justify-content:center;
             font-size:13px;font-weight:700;
-            border:2px solid #c8a84b;
-            box-shadow:0 2px 6px rgba(0,0,0,0.4);
+            border:2px solid #fff;
+            box-shadow:0 2px 8px rgba(192,98,47,0.5);
           ">${count}</div>`,
           className: "",
           iconSize: [36, 36],

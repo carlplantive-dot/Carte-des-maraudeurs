@@ -15,34 +15,29 @@ import { ASSOCIATION_COLORS, ALL_ASSOCIATIONS } from "@/lib/associations";
 const Map = dynamic(() => import("@/components/Map"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-parchment">
-      <p className="text-hogwarts-light text-sm animate-pulse font-serif italic">
-        Consultation de la carte…
-      </p>
+    <div className="w-full h-full flex items-center justify-center bg-cream">
+      <p className="text-warm-mid text-sm animate-pulse">Chargement de la carte…</p>
     </div>
   ),
 });
 
 export default function HomePage() {
-  // ── Data ──────────────────────────────────────────────────────────────────
+  // ── Données ───────────────────────────────────────────────────────────────
   const [maraudes, setMaraudes] = useState<Maraude[]>(staticMaraudes);
 
   useEffect(() => {
     fetch("/api/maraudes")
       .then((r) => r.json())
-      // N'écraser les données statiques que si elles viennent d'une source
-      // externe (Google Sheets). La source "static" est déjà chargée via
-      // l'import ci-dessus et est toujours à jour après un déploiement.
       .then((data) => { if (data.source === "sheets" && data.maraudes?.length) setMaraudes(data.maraudes); })
       .catch(() => {});
   }, []);
 
-  // ── Filters ───────────────────────────────────────────────────────────────
+  // ── Filtres ───────────────────────────────────────────────────────────────
   const [selectedJour, setSelectedJour] = useState<Jour | null>(null);
   const [selectedAssos, setSelectedAssos] = useState<string[]>([]);
   const [search, setSearch] = useState("");
 
-  // ── UI state ──────────────────────────────────────────────────────────────
+  // ── État UI ───────────────────────────────────────────────────────────────
   const [selectedMaraude, setSelectedMaraude] = useState<Maraude | null>(null);
   const [showList, setShowList] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
@@ -51,7 +46,7 @@ export default function HomePage() {
   const [geoError, setGeoError] = useState<string | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
 
-  // ── Filtered list ─────────────────────────────────────────────────────────
+  // ── Liste filtrée ─────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let list = maraudes;
     if (selectedJour) list = list.filter((m) => m.jours.includes(selectedJour));
@@ -104,32 +99,32 @@ export default function HomePage() {
     );
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Rendu ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-screen bg-parchment text-hogwarts-dark overflow-hidden">
+    <div className="flex flex-col h-screen bg-cream text-warm-dark overflow-hidden">
 
       {/* ════ HEADER ════════════════════════════════════════════════════════ */}
-      <header className="z-10 bg-hogwarts text-parchment px-4 py-3 shadow-md flex-shrink-0">
+      <header className="z-10 bg-brick text-white px-4 pt-4 pb-6 rounded-b-[28px] shadow-lg flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
           <span className="text-2xl select-none" aria-hidden>🗺️</span>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base font-bold tracking-wide leading-tight">
+            <h1 className="text-base font-bold leading-tight tracking-wide">
               La Carte des Maraudeurs
             </h1>
-            <p className="text-parchment/60 text-[10px] tracking-widest uppercase font-serif italic hidden sm:block">
-              Maraudes solidaires à Paris
+            <p className="text-white/70 text-[11px] mt-0.5">
+              Trouver une maraude ce soir
             </p>
           </div>
 
-          {/* Desktop-only controls */}
+          {/* Contrôles desktop */}
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={handleGeolocate}
               disabled={geoLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-parchment/10 hover:bg-parchment/20 border border-parchment/20 text-xs transition-all disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-xs transition-all disabled:opacity-50"
             >
               {geoLoading
-                ? <span className="animate-spin w-3 h-3 border border-parchment/60 border-t-parchment rounded-full inline-block" />
+                ? <span className="animate-spin w-3 h-3 border border-white/60 border-t-white rounded-full inline-block" />
                 : "📍"
               }
               {userLocation ? "Relocalisé" : "Me localiser"}
@@ -137,7 +132,9 @@ export default function HomePage() {
             <button
               onClick={() => setShowList((v) => !v)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
-                showList ? "bg-gold text-hogwarts-dark border-gold" : "bg-parchment/10 hover:bg-parchment/20 border-parchment/20"
+                showList
+                  ? "bg-white text-brick border-white font-semibold"
+                  : "bg-white/15 hover:bg-white/25 border-white/20"
               }`}
             >
               {showList ? "🗺️ Carte" : "📋 Liste"}
@@ -146,29 +143,56 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ════ DESKTOP FILTER BAR (hidden on mobile) ═════════════════════════ */}
-      <div className="hidden sm:block z-10 bg-parchment border-b border-gold/30 px-4 py-2.5 flex-shrink-0 space-y-2">
+      {/* ════ BARRE RECHERCHE + FILTRES JOURS ═══════════════════════════════ */}
+      <div className="z-10 bg-cream px-4 pt-3 pb-2.5 flex-shrink-0 space-y-2.5">
+        {/* Recherche */}
+        <div className="relative max-w-6xl mx-auto">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brick select-none">🔍</span>
+          <input
+            type="text"
+            placeholder="Rechercher une maraude, un quartier…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-10 py-3 rounded-full border border-warm-border bg-white text-sm text-warm-dark placeholder:text-warm-mid/60 focus:outline-none focus:border-brick shadow-sm"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-warm-mid hover:text-warm-dark"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Filtres jours */}
         <div className="max-w-6xl mx-auto">
           <DayFilter selected={selectedJour} onChange={handleDayChange} />
         </div>
-        <div className="max-w-6xl mx-auto">
-          <AssociationFilter associations={ALL_ASSOCIATIONS} selected={selectedAssos} onChange={setSelectedAssos} />
+
+        {/* Filtres associations (desktop seulement) */}
+        <div className="hidden sm:block max-w-6xl mx-auto">
+          <AssociationFilter
+            associations={ALL_ASSOCIATIONS}
+            selected={selectedAssos}
+            onChange={setSelectedAssos}
+          />
         </div>
       </div>
 
-      {/* ════ GEO ERROR ══════════════════════════════════════════════════════ */}
+      {/* ════ ERREUR GÉO ═════════════════════════════════════════════════════ */}
       {geoError && (
-        <div className="z-20 flex-shrink-0 bg-red-900/80 text-red-100 text-xs px-4 py-2 text-center">
+        <div className="z-20 flex-shrink-0 bg-red-50 text-red-600 text-xs px-4 py-2 text-center border-b border-red-100">
           {geoError}
           <button className="ml-3 underline" onClick={() => setGeoError(null)}>Fermer</button>
         </div>
       )}
 
-      {/* ════ MAIN ══════════════════════════════════════════════════════════ */}
+      {/* ════ ZONE PRINCIPALE ════════════════════════════════════════════════ */}
       <main className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0 flex">
 
-          {/* Map */}
+          {/* Carte */}
           <div className={`relative ${showList ? "hidden sm:flex sm:flex-1" : "flex-1"}`}>
             <div className="absolute inset-0">
               <Map
@@ -180,35 +204,35 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Desktop legend */}
-            <div className="hidden sm:block absolute top-4 left-4 z-[900] bg-parchment/95 backdrop-blur-sm border border-gold/40 rounded-xl px-3 py-2.5 shadow-lg max-w-[200px]">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-hogwarts-light mb-1.5">Légende</p>
-              <ul className="space-y-1">
+            {/* Légende desktop */}
+            <div className="hidden sm:block absolute top-4 left-4 z-[900] bg-white/95 backdrop-blur-sm border border-warm-border rounded-2xl px-3 py-3 shadow-lg max-w-[210px]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-warm-mid mb-2">Légende</p>
+              <ul className="space-y-1.5">
                 {ALL_ASSOCIATIONS.map((label) => {
-                  const color = ASSOCIATION_COLORS[label] ?? "#2c3e50";
+                  const color = ASSOCIATION_COLORS[label] ?? "#C0622F";
                   const inactive = selectedAssos.length > 0 && !selectedAssos.includes(label);
                   return (
-                    <li key={label} className={`flex items-center gap-2 transition-opacity ${inactive ? "opacity-30" : ""}`}>
-                      <span className="inline-block w-2.5 h-2.5 rounded-full border border-white/30 flex-shrink-0" style={{ backgroundColor: color }} />
-                      <span className="text-[10px] text-hogwarts-dark leading-tight">{label}</span>
+                    <li key={label} className={`flex items-center gap-2 transition-opacity ${inactive ? "opacity-20" : ""}`}>
+                      <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                      <span className="text-[10px] text-warm-dark leading-tight">{label}</span>
                     </li>
                   );
                 })}
               </ul>
-              <p className="text-[10px] text-hogwarts-light/60 mt-2 text-right border-t border-gold/20 pt-1.5">
+              <p className="text-[10px] text-warm-mid mt-2.5 text-right border-t border-warm-border pt-2">
                 {filtered.length} maraude{filtered.length !== 1 ? "s" : ""}
               </p>
             </div>
 
-            {/* Mobile count badge */}
-            <div className="sm:hidden absolute top-3 right-3 z-[900] bg-hogwarts/90 text-parchment text-[11px] font-semibold px-2.5 py-1 rounded-full shadow">
+            {/* Badge compteur mobile */}
+            <div className="sm:hidden absolute top-3 right-3 z-[900] bg-brick text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
               {filtered.length} maraude{filtered.length !== 1 ? "s" : ""}
             </div>
           </div>
 
-          {/* List panel (desktop sidebar / mobile fullscreen) */}
+          {/* Panneau liste */}
           {showList && (
-            <div className="w-full sm:w-80 lg:w-96 flex-shrink-0 bg-parchment border-l border-gold/30 flex flex-col overflow-hidden">
+            <div className="w-full sm:w-80 lg:w-96 flex-shrink-0 border-l border-warm-border flex flex-col overflow-hidden">
               <MaraudeList
                 maraudes={filtered}
                 selectedId={selectedMaraude?.id ?? null}
@@ -220,7 +244,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Maraude card */}
+        {/* Fiche maraude */}
         {selectedMaraude && !showList && (
           <MaraudeCard
             maraude={selectedMaraude}
@@ -229,18 +253,18 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* ════ MOBILE BOTTOM NAV ═════════════════════════════════════════════ */}
-      <nav className="sm:hidden flex-shrink-0 bg-hogwarts border-t border-parchment/10 flex items-stretch safe-bottom z-10">
+      {/* ════ BARRE DE NAVIGATION MOBILE ════════════════════════════════════ */}
+      <nav className="sm:hidden flex-shrink-0 bg-brick border-t border-white/10 flex items-stretch safe-bottom z-10">
 
         {/* Filtres */}
         <button
           onClick={() => setShowFilterDrawer(true)}
-          className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-parchment/70 active:bg-parchment/10 relative"
+          className="flex-1 flex flex-col items-center justify-center py-3 gap-0.5 text-white/70 active:bg-white/10 relative"
         >
           <span className="text-lg leading-none">🎛️</span>
           <span className="text-[10px] font-medium">Filtres</span>
           {activeFilterCount > 0 && (
-            <span className="absolute top-1.5 right-[calc(50%-18px)] w-4 h-4 bg-gold text-hogwarts-dark text-[9px] font-bold rounded-full flex items-center justify-center">
+            <span className="absolute top-2 right-[calc(50%-18px)] w-4 h-4 bg-white text-brick text-[9px] font-bold rounded-full flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}
@@ -249,7 +273,7 @@ export default function HomePage() {
         {/* Liste */}
         <button
           onClick={() => { setShowList((v) => !v); setSelectedMaraude(null); }}
-          className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 active:bg-parchment/10 ${showList ? "text-gold" : "text-parchment/70"}`}
+          className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 active:bg-white/10 transition-colors ${showList ? "text-white" : "text-white/70"}`}
         >
           <span className="text-lg leading-none">{showList ? "🗺️" : "📋"}</span>
           <span className="text-[10px] font-medium">{showList ? "Carte" : "Liste"}</span>
@@ -259,30 +283,30 @@ export default function HomePage() {
         <button
           onClick={handleGeolocate}
           disabled={geoLoading}
-          className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 active:bg-parchment/10 disabled:opacity-50 ${userLocation ? "text-gold" : "text-parchment/70"}`}
+          className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 active:bg-white/10 disabled:opacity-50 transition-colors ${userLocation ? "text-white" : "text-white/70"}`}
         >
           {geoLoading
-            ? <span className="animate-spin w-4 h-4 border-2 border-parchment/40 border-t-parchment rounded-full" />
+            ? <span className="animate-spin w-4 h-4 border-2 border-white/40 border-t-white rounded-full" />
             : <span className="text-lg leading-none">📍</span>
           }
           <span className="text-[10px] font-medium">Moi</span>
         </button>
       </nav>
 
-      {/* ════ FILTER DRAWER (mobile) ════════════════════════════════════════ */}
+      {/* ════ DRAWER FILTRES (mobile) ════════════════════════════════════════ */}
       <FilterDrawer
         open={showFilterDrawer}
         onClose={() => setShowFilterDrawer(false)}
         selectedJour={selectedJour}
-        onJourChange={(j) => { handleDayChange(j); }}
+        onJourChange={handleDayChange}
         selectedAssos={selectedAssos}
         onAssosChange={setSelectedAssos}
         count={filtered.length}
       />
 
-      {/* Desktop footer */}
-      <footer className="hidden sm:block flex-shrink-0 bg-hogwarts/90 text-parchment/40 text-[10px] text-center py-1.5 tracking-widest font-serif italic">
-        ✦ Méfait accompli ✦
+      {/* Pied de page desktop */}
+      <footer className="hidden sm:block flex-shrink-0 bg-cream border-t border-warm-border text-warm-mid text-[10px] text-center py-2 tracking-wide">
+        La Carte des Maraudeurs — Maraudes solidaires à Paris
       </footer>
     </div>
   );

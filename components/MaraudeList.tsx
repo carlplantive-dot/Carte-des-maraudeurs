@@ -19,74 +19,96 @@ export default function MaraudeList({
   onSearchChange,
 }: MaraudeListProps) {
   return (
-    <div className="flex flex-col h-full">
-      {/* Search */}
-      <div className="p-3 border-b border-gold/30 flex-shrink-0">
+    <div className="flex flex-col h-full bg-cream">
+      {/* Barre de recherche */}
+      <div className="px-4 pt-4 pb-3 flex-shrink-0">
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-hogwarts-light text-sm">
-            🔍
-          </span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brick text-sm select-none">🔍</span>
           <input
             type="text"
-            placeholder="Rechercher une maraude, une adresse…"
+            placeholder="Rechercher une maraude, un quartier…"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-hogwarts-light/40 bg-parchment text-sm text-hogwarts-dark placeholder:text-hogwarts-light/60 focus:outline-none focus:border-gold"
+            className="w-full pl-10 pr-9 py-2.5 rounded-full border border-warm-border bg-white text-sm text-warm-dark placeholder:text-warm-mid/60 focus:outline-none focus:border-brick shadow-sm"
           />
           {search && (
             <button
               onClick={() => onSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-hogwarts-light hover:text-hogwarts-dark text-xs"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-warm-mid hover:text-warm-dark text-xs"
             >
               ✕
             </button>
           )}
         </div>
-        <p className="text-[10px] text-hogwarts-light mt-1.5 text-right">
-          {maraudes.length} résultat{maraudes.length !== 1 ? "s" : ""}
+        <p className="text-[11px] text-warm-mid mt-2 text-right">
+          {maraudes.length} maraude{maraudes.length !== 1 ? "s" : ""}
         </p>
       </div>
 
-      {/* List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-gold/20">
+      {/* Liste */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
         {maraudes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full py-12 text-hogwarts-light/60">
-            <span className="text-3xl mb-2">🗺️</span>
-            <p className="text-sm italic font-serif">Aucune maraude trouvée</p>
+          <div className="flex flex-col items-center justify-center py-16 text-warm-mid/50">
+            <span className="text-4xl mb-3">🗺️</span>
+            <p className="text-sm">Aucune maraude trouvée</p>
           </div>
         ) : (
           maraudes.map((m) => {
-            const color = ASSOCIATION_COLORS[m.association] ?? "#2c3e50";
+            const color = ASSOCIATION_COLORS[m.association] ?? "#C0622F";
             const isSelected = m.id === selectedId;
             return (
               <button
                 key={m.id}
                 onClick={() => onSelect(m)}
-                className={`w-full text-left px-4 py-3 transition-colors hover:bg-parchment-dark ${
-                  isSelected ? "bg-parchment-dark" : ""
+                className={`w-full text-left bg-white rounded-2xl shadow-sm border overflow-hidden transition-all hover:shadow-md active:scale-[0.99] ${
+                  isSelected ? "border-brick shadow-md ring-1 ring-brick/20" : "border-warm-border"
                 }`}
               >
-                <div className="flex items-start gap-2.5">
-                  {/* Color dot */}
-                  <span
-                    className="mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white/30"
-                    style={{ backgroundColor: color }}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-hogwarts-dark truncate leading-snug">
-                      {m.nom}
-                    </p>
-                    <p className="text-[11px] text-hogwarts-light truncate">
-                      {m.association}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className="text-[10px] text-hogwarts-light/80">📍 {m.adresse}</span>
+                <div className="flex">
+                  {/* Bandeau coloré à gauche */}
+                  <div className="w-1.5 flex-shrink-0" style={{ backgroundColor: color }} />
+
+                  <div className="flex-1 px-3 py-3 min-w-0">
+                    {/* Nom + flèche */}
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-bold text-warm-dark leading-snug flex-1">{m.nom}</p>
+                      <span className="text-warm-border text-base flex-shrink-0 mt-0.5 font-light">›</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <span className="text-[10px] text-hogwarts-light/80">🕐 {m.horaire}</span>
-                      <span className="text-[10px] text-hogwarts-light/60">
-                        {m.jours.map((j) => j.slice(0, 3)).join(" · ")}
+
+                    {/* Badge association */}
+                    <span
+                      className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full border"
+                      style={{
+                        backgroundColor: `${color}18`,
+                        borderColor: `${color}40`,
+                        color: color,
+                      }}
+                    >
+                      {m.association}
+                    </span>
+
+                    {/* Lieu + horaire */}
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                      <span className="text-[11px] text-warm-mid flex items-center gap-1">
+                        <span className="select-none">📍</span>
+                        <span className="truncate max-w-[140px]">{m.adresse.split(",")[0]}</span>
                       </span>
+                      <span className="text-[11px] text-warm-mid flex items-center gap-1">
+                        <span className="select-none">🕐</span>
+                        <span>{m.horaire.split(" (")[0].trim()}</span>
+                      </span>
+                    </div>
+
+                    {/* Badges jours */}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {m.jours.map((j) => (
+                        <span
+                          key={j}
+                          className="px-1.5 py-0.5 bg-olive-light text-olive text-[10px] font-semibold rounded-full"
+                        >
+                          {j.slice(0, 3)}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
