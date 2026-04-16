@@ -1,5 +1,7 @@
 import { Maraude } from "@/types/maraude";
 
+export type MomentJournee = "Jour" | "Soir" | "Nuit";
+
 const DOW_TO_JOUR: Record<number, string> = {
   0: "Dimanche",
   1: "Lundi",
@@ -9,6 +11,15 @@ const DOW_TO_JOUR: Record<number, string> = {
   5: "Vendredi",
   6: "Samedi",
 };
+
+/** Retourne null si l'heure de début est inconnue (maraude incluse dans tous les filtres). */
+export function getMomentJournee(maraude: Maraude): MomentJournee | null {
+  if (!maraude.horaire_debut) return null;
+  const h = parseInt(maraude.horaire_debut.split(":")[0], 10);
+  if (h >= 6 && h < 18) return "Jour";
+  if (h >= 18 && h < 21) return "Soir";
+  return "Nuit"; // 21h–06h
+}
 
 export function isEnSaison(maraude: Maraude, mois: number): boolean {
   if (!maraude.periode) return true;

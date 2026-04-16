@@ -11,7 +11,7 @@ import MaraudeList from "@/components/MaraudeList";
 import AssociationFilter from "@/components/AssociationFilter";
 import FilterDrawer from "@/components/FilterDrawer";
 import { ASSOCIATION_COLORS, ALL_ASSOCIATIONS } from "@/lib/associations";
-import { isEnSaison, isEnCours } from "@/lib/time";
+import { isEnSaison, isEnCours, getMomentJournee, MomentJournee } from "@/lib/time";
 
 const Map = dynamic(() => import("@/components/Map"), {
   ssr: false,
@@ -39,6 +39,7 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [filterSaison, setFilterSaison] = useState(false);
   const [filterEnCours, setFilterEnCours] = useState(false);
+  const [filterMoment, setFilterMoment] = useState<MomentJournee | null>(null);
 
   // ── État UI ───────────────────────────────────────────────────────────────
   const [selectedMaraude, setSelectedMaraude] = useState<Maraude | null>(null);
@@ -56,6 +57,7 @@ export default function HomePage() {
     let list = maraudes;
     if (filterSaison) list = list.filter((m) => isEnSaison(m, currentMonth));
     if (filterEnCours) list = list.filter((m) => isEnCours(m));
+    if (filterMoment) list = list.filter((m) => { const mo = getMomentJournee(m); return mo === null || mo === filterMoment; });
     if (selectedJour) list = list.filter((m) => m.jours.includes(selectedJour));
     if (selectedAssos.length > 0) list = list.filter((m) => selectedAssos.includes(m.association));
     if (search.trim()) {
@@ -69,10 +71,10 @@ export default function HomePage() {
       );
     }
     return list;
-  }, [maraudes, currentMonth, filterSaison, filterEnCours, selectedJour, selectedAssos, search]);
+  }, [maraudes, currentMonth, filterSaison, filterEnCours, filterMoment, selectedJour, selectedAssos, search]);
 
   const activeFilterCount =
-    (selectedJour ? 1 : 0) + selectedAssos.length + (filterSaison ? 1 : 0) + (filterEnCours ? 1 : 0);
+    (selectedJour ? 1 : 0) + selectedAssos.length + (filterSaison ? 1 : 0) + (filterEnCours ? 1 : 0) + (filterMoment ? 1 : 0);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleMaraudeClick = useCallback((maraude: Maraude) => {
@@ -201,6 +203,28 @@ export default function HomePage() {
           >
             🗓 En saison
           </button>
+        </div>
+
+        {/* Moment de la journée */}
+        <div className="max-w-6xl mx-auto flex gap-2">
+          {([
+            { value: null,   label: "Tout moment", icon: "⏱" },
+            { value: "Jour", label: "Journée",      icon: "☀️" },
+            { value: "Soir", label: "Soirée",       icon: "🌆" },
+            { value: "Nuit", label: "Nuit",         icon: "🌙" },
+          ] as { value: MomentJournee | null; label: string; icon: string }[]).map(({ value, label, icon }) => (
+            <button
+              key={label}
+              onClick={() => setFilterMoment(value)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                filterMoment === value
+                  ? "bg-brick text-white border-brick shadow-sm"
+                  : "bg-white text-warm-mid border-warm-border hover:border-brick hover:text-warm-dark"
+              }`}
+            >
+              {icon} {label}
+            </button>
+          ))}
         </div>
 
         {/* Filtres associations (desktop seulement) */}
@@ -338,6 +362,8 @@ export default function HomePage() {
         onFilterSaisonChange={setFilterSaison}
         filterEnCours={filterEnCours}
         onFilterEnCoursChange={setFilterEnCours}
+        filterMoment={filterMoment}
+        onFilterMomentChange={setFilterMoment}
         count={filtered.length}
       />
 

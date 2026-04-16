@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Jour } from "@/types/maraude";
 import { JOURS_SEMAINE } from "@/data/maraudes";
 import { ALL_ASSOCIATIONS, ASSOCIATION_COLORS } from "@/lib/associations";
+import { MomentJournee } from "@/lib/time";
 
 interface FilterDrawerProps {
   open: boolean;
@@ -16,6 +17,8 @@ interface FilterDrawerProps {
   onFilterSaisonChange: (v: boolean) => void;
   filterEnCours: boolean;
   onFilterEnCoursChange: (v: boolean) => void;
+  filterMoment: MomentJournee | null;
+  onFilterMomentChange: (v: MomentJournee | null) => void;
   count: number;
 }
 
@@ -30,6 +33,8 @@ export default function FilterDrawer({
   onFilterSaisonChange,
   filterEnCours,
   onFilterEnCoursChange,
+  filterMoment,
+  onFilterMomentChange,
   count,
 }: FilterDrawerProps) {
   useEffect(() => {
@@ -41,7 +46,7 @@ export default function FilterDrawer({
 
   if (!open) return null;
 
-  const hasFilters = selectedJour !== null || selectedAssos.length > 0 || filterSaison || filterEnCours;
+  const hasFilters = selectedJour !== null || selectedAssos.length > 0 || filterSaison || filterEnCours || filterMoment !== null;
 
   return (
     <>
@@ -61,7 +66,7 @@ export default function FilterDrawer({
           </div>
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { onJourChange(null); onAssosChange([]); onFilterSaisonChange(false); onFilterEnCoursChange(false); }}
+              onClick={() => { onJourChange(null); onAssosChange([]); onFilterSaisonChange(false); onFilterEnCoursChange(false); onFilterMomentChange(null); }}
               className={`text-xs text-brick underline transition-opacity ${hasFilters ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               Réinitialiser
@@ -106,6 +111,33 @@ export default function FilterDrawer({
               >
                 🗓 En saison (ce mois-ci)
               </button>
+            </div>
+          </div>
+
+          {/* Moment de la journée */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-warm-mid mb-3">
+              Moment de la journée
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {([
+                { value: null,   label: "Tout moment", icon: "⏱" },
+                { value: "Jour", label: "Journée (6h–18h)",  icon: "☀️" },
+                { value: "Soir", label: "Soirée (18h–21h)", icon: "🌆" },
+                { value: "Nuit", label: "Nuit (21h+)",       icon: "🌙" },
+              ] as { value: MomentJournee | null; label: string; icon: string }[]).map(({ value, label, icon }) => (
+                <button
+                  key={label}
+                  onClick={() => onFilterMomentChange(value)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                    filterMoment === value
+                      ? "bg-brick text-white border-brick shadow-sm"
+                      : "bg-cream text-warm-dark border-warm-border hover:border-brick"
+                  }`}
+                >
+                  {icon} {label}
+                </button>
+              ))}
             </div>
           </div>
 
