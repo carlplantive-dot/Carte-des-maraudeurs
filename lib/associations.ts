@@ -33,6 +33,18 @@ export const ASSOCIATION_COLORS: Record<string, string> = {
   "Magis Solidarité": "#002366",
   "Macadam Café": "#8b0000",
   "Entraides Citoyennes": "#2e8b57",
+  "MESL": "#0e4d4d",
+  // Associations professionnelles
+  "Oppélia": "#1b5e20",
+  // Associations étudiantes
+  "La Balade des Lucioles": "#f57f17",
+  "UCPH": "#6a1b9a",
+  "Paris Solidaires": "#ad1457",
+  // Associations musulmanes
+  "Une Chorba Pour Tous": "#00695c",
+  "Au Cœur de la Précarité": "#bf360c",
+  "Association Miséricorde": "#0d47a1",
+  "Un Pas Vers Demain": "#558b2f",
 };
 
 export const ALL_ASSOCIATIONS = Object.keys(ASSOCIATION_COLORS);
