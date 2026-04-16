@@ -12,6 +12,10 @@ interface FilterDrawerProps {
   onJourChange: (j: Jour | null) => void;
   selectedAssos: string[];
   onAssosChange: (a: string[]) => void;
+  filterSaison: boolean;
+  onFilterSaisonChange: (v: boolean) => void;
+  filterEnCours: boolean;
+  onFilterEnCoursChange: (v: boolean) => void;
   count: number;
 }
 
@@ -22,6 +26,10 @@ export default function FilterDrawer({
   onJourChange,
   selectedAssos,
   onAssosChange,
+  filterSaison,
+  onFilterSaisonChange,
+  filterEnCours,
+  onFilterEnCoursChange,
   count,
 }: FilterDrawerProps) {
   useEffect(() => {
@@ -33,7 +41,7 @@ export default function FilterDrawer({
 
   if (!open) return null;
 
-  const hasFilters = selectedJour !== null || selectedAssos.length > 0;
+  const hasFilters = selectedJour !== null || selectedAssos.length > 0 || filterSaison || filterEnCours;
 
   return (
     <>
@@ -53,7 +61,7 @@ export default function FilterDrawer({
           </div>
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { onJourChange(null); onAssosChange([]); }}
+              onClick={() => { onJourChange(null); onAssosChange([]); onFilterSaisonChange(false); onFilterEnCoursChange(false); }}
               className={`text-xs text-brick underline transition-opacity ${hasFilters ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               Réinitialiser
@@ -70,6 +78,36 @@ export default function FilterDrawer({
 
         {/* Contenu scrollable */}
         <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+
+          {/* Disponibilité */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-warm-mid mb-3">
+              Disponibilité
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => onFilterEnCoursChange(!filterEnCours)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                  filterEnCours
+                    ? "bg-green-500 text-white border-green-500 shadow-sm"
+                    : "bg-cream text-warm-dark border-warm-border hover:border-green-400"
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${filterEnCours ? "bg-white animate-pulse" : "bg-green-400"}`} />
+                En cours maintenant
+              </button>
+              <button
+                onClick={() => onFilterSaisonChange(!filterSaison)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                  filterSaison
+                    ? "bg-olive text-white border-olive shadow-sm"
+                    : "bg-cream text-warm-dark border-warm-border hover:border-olive"
+                }`}
+              >
+                🗓 En saison (ce mois-ci)
+              </button>
+            </div>
+          </div>
 
           {/* Jour de la semaine */}
           <div>

@@ -37,6 +37,8 @@ export default function HomePage() {
   const [selectedJour, setSelectedJour] = useState<Jour | null>(null);
   const [selectedAssos, setSelectedAssos] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [filterSaison, setFilterSaison] = useState(false);
+  const [filterEnCours, setFilterEnCours] = useState(false);
 
   // ── État UI ───────────────────────────────────────────────────────────────
   const [selectedMaraude, setSelectedMaraude] = useState<Maraude | null>(null);
@@ -51,7 +53,9 @@ export default function HomePage() {
   const currentMonth = useMemo(() => new Date().getMonth() + 1, []);
 
   const filtered = useMemo(() => {
-    let list = maraudes.filter((m) => isEnSaison(m, currentMonth));
+    let list = maraudes;
+    if (filterSaison) list = list.filter((m) => isEnSaison(m, currentMonth));
+    if (filterEnCours) list = list.filter((m) => isEnCours(m));
     if (selectedJour) list = list.filter((m) => m.jours.includes(selectedJour));
     if (selectedAssos.length > 0) list = list.filter((m) => selectedAssos.includes(m.association));
     if (search.trim()) {
@@ -65,9 +69,10 @@ export default function HomePage() {
       );
     }
     return list;
-  }, [maraudes, currentMonth, selectedJour, selectedAssos, search]);
+  }, [maraudes, currentMonth, filterSaison, filterEnCours, selectedJour, selectedAssos, search]);
 
-  const activeFilterCount = (selectedJour ? 1 : 0) + selectedAssos.length;
+  const activeFilterCount =
+    (selectedJour ? 1 : 0) + selectedAssos.length + (filterSaison ? 1 : 0) + (filterEnCours ? 1 : 0);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleMaraudeClick = useCallback((maraude: Maraude) => {
@@ -171,6 +176,31 @@ export default function HomePage() {
         {/* Filtres jours */}
         <div className="max-w-6xl mx-auto">
           <DayFilter selected={selectedJour} onChange={handleDayChange} />
+        </div>
+
+        {/* Filtres rapides : En cours / En saison */}
+        <div className="max-w-6xl mx-auto flex gap-2">
+          <button
+            onClick={() => setFilterEnCours((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              filterEnCours
+                ? "bg-green-500 text-white border-green-500 shadow-sm"
+                : "bg-white text-warm-mid border-warm-border hover:border-green-400 hover:text-green-700"
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${filterEnCours ? "bg-white animate-pulse" : "bg-green-400"}`} />
+            En cours
+          </button>
+          <button
+            onClick={() => setFilterSaison((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              filterSaison
+                ? "bg-olive text-white border-olive shadow-sm"
+                : "bg-white text-warm-mid border-warm-border hover:border-olive hover:text-olive"
+            }`}
+          >
+            🗓 En saison
+          </button>
         </div>
 
         {/* Filtres associations (desktop seulement) */}
@@ -304,6 +334,10 @@ export default function HomePage() {
         onJourChange={handleDayChange}
         selectedAssos={selectedAssos}
         onAssosChange={setSelectedAssos}
+        filterSaison={filterSaison}
+        onFilterSaisonChange={setFilterSaison}
+        filterEnCours={filterEnCours}
+        onFilterEnCoursChange={setFilterEnCours}
         count={filtered.length}
       />
 
