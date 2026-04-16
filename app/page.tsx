@@ -116,13 +116,19 @@ export default function HomePage() {
       {/* ════ HEADER ════════════════════════════════════════════════════════ */}
       <header className="z-10 bg-brick text-white px-4 pt-4 pb-6 rounded-b-[28px] shadow-lg flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
-          <span className="text-2xl select-none" aria-hidden>🗺️</span>
+          {/* Logo SVG : pin de carte avec cœur */}
+          <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg viewBox="0 0 32 32" width="26" height="26" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M16 3C11.03 3 7 7.03 7 12c0 6.75 9 17 9 17s9-10.25 9-17c0-4.97-4.03-9-9-9z" fill="white"/>
+              <path d="M16 15C14 13 12 12.5 12 10.5A2.1 2.1 0 0 1 16 9a2.1 2.1 0 0 1 4 1.5C20 12.5 18 13 16 15z" fill="#C0622F"/>
+            </svg>
+          </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold leading-tight tracking-wide">
               La Carte des Maraudeurs
             </h1>
             <p className="text-white/70 text-[11px] mt-0.5">
-              Trouver une maraude ce soir
+              Solidarité dans les rues de Paris
             </p>
           </div>
 
@@ -154,7 +160,7 @@ export default function HomePage() {
       </header>
 
       {/* ════ BARRE RECHERCHE + FILTRES JOURS ═══════════════════════════════ */}
-      <div className="z-10 bg-cream px-4 pt-3 pb-2.5 flex-shrink-0 space-y-2.5">
+      <div className="z-10 bg-cream px-4 pt-2.5 pb-2 flex-shrink-0 space-y-2">
         {/* Recherche */}
         <div className="relative max-w-6xl mx-auto">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brick select-none">🔍</span>
@@ -180,11 +186,12 @@ export default function HomePage() {
           <DayFilter selected={selectedJour} onChange={handleDayChange} />
         </div>
 
-        {/* Filtres rapides : En cours / En saison */}
-        <div className="max-w-6xl mx-auto flex gap-2">
+        {/* Bande de filtres rapides — une seule ligne scrollable */}
+        <div className="max-w-6xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+          {/* Disponibilité */}
           <button
             onClick={() => setFilterEnCours((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
               filterEnCours
                 ? "bg-green-500 text-white border-green-500 shadow-sm"
                 : "bg-white text-warm-mid border-warm-border hover:border-green-400 hover:text-green-700"
@@ -195,29 +202,29 @@ export default function HomePage() {
           </button>
           <button
             onClick={() => setFilterSaison((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
               filterSaison
                 ? "bg-olive text-white border-olive shadow-sm"
                 : "bg-white text-warm-mid border-warm-border hover:border-olive hover:text-olive"
             }`}
           >
-            🗓 En saison
+            En saison
           </button>
-        </div>
 
-        {/* Moment de la journée */}
-        <div className="max-w-6xl mx-auto flex gap-2">
+          {/* Séparateur */}
+          <div className="flex-shrink-0 w-px h-5 bg-warm-border" />
+
+          {/* Moment de la journée */}
           {([
-            { value: null,   label: "Tout moment", icon: "⏱" },
-            { value: "Jour", label: "Journée",      icon: "☀️" },
-            { value: "Soir", label: "Soirée",       icon: "🌆" },
-            { value: "Nuit", label: "Nuit",         icon: "🌙" },
-          ] as { value: MomentJournee | null; label: string; icon: string }[]).map(({ value, label, icon }) => (
+            { v: "Jour" as MomentJournee, label: "Journée", icon: "☀️" },
+            { v: "Soir" as MomentJournee, label: "Soirée",  icon: "🌇" },
+            { v: "Nuit" as MomentJournee, label: "Nuit",    icon: "🌙" },
+          ]).map(({ v, label, icon }) => (
             <button
-              key={label}
-              onClick={() => setFilterMoment(value)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                filterMoment === value
+              key={v}
+              onClick={() => setFilterMoment((cur) => cur === v ? null : v)}
+              className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                filterMoment === v
                   ? "bg-brick text-white border-brick shadow-sm"
                   : "bg-white text-warm-mid border-warm-border hover:border-brick hover:text-warm-dark"
               }`}

@@ -121,14 +121,14 @@ export default function FilterDrawer({
             </p>
             <div className="flex flex-wrap gap-2">
               {([
-                { value: null,   label: "Tout moment", icon: "⏱" },
-                { value: "Jour", label: "Journée (6h–18h)",  icon: "☀️" },
-                { value: "Soir", label: "Soirée (18h–21h)", icon: "🌆" },
-                { value: "Nuit", label: "Nuit (21h+)",       icon: "🌙" },
+                { value: null,   label: "Tous",               icon: "⏱" },
+                { value: "Jour", label: "Journée  (6h–18h)",  icon: "☀️" },
+                { value: "Soir", label: "Soirée (18h–21h)",   icon: "🌇" },
+                { value: "Nuit", label: "Nuit (21h+)",        icon: "🌙" },
               ] as { value: MomentJournee | null; label: string; icon: string }[]).map(({ value, label, icon }) => (
                 <button
                   key={label}
-                  onClick={() => onFilterMomentChange(value)}
+                  onClick={() => onFilterMomentChange(filterMoment === value && value !== null ? null : value)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
                     filterMoment === value
                       ? "bg-brick text-white border-brick shadow-sm"
