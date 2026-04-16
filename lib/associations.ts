@@ -27,6 +27,12 @@ export const ASSOCIATION_COLORS: Record<string, string> = {
   "Utopia 56": "#00838f",
   "Dans Ma Rue": "#e65100",
   "Robins des Rues": "#4e342e",
+  // Communautés chrétiennes
+  "Communauté du Chemin Neuf": "#7b3f00",
+  "Compagnie des Laveurs de Pieds": "#5c4033",
+  "Magis Solidarité": "#002366",
+  "Macadam Café": "#8b0000",
+  "Entraides Citoyennes": "#2e8b57",
 };
 
 export const ALL_ASSOCIATIONS = Object.keys(ASSOCIATION_COLORS);
