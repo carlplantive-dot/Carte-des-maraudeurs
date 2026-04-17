@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Maraude } from "@/types/maraude";
 import { ASSOCIATION_COLORS } from "@/lib/associations";
 import { isEnCours } from "@/lib/time";
@@ -165,6 +166,14 @@ export default function MaraudeCard({ maraude, onClose }: MaraudeCardProps) {
               )}
             </div>
           )}
+
+          {/* Lien fiche détaillée */}
+          <Link
+            href={`/maraude/${maraude.id}`}
+            className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-2xl text-xs font-semibold border border-warm-border text-warm-mid hover:border-brick hover:text-brick transition-colors"
+          >
+            Voir la fiche complète →
+          </Link>
         </div>
       </div>
     </div>
