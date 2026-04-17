@@ -33,6 +33,7 @@ export default function RootLayout({
     <html lang="fr" className="h-full antialiased">
       <head>
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
       </head>
       <body className="h-full flex flex-col">
         {children}
