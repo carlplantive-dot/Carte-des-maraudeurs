@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "La Carte des Maraudeurs",
-    short_name: "Maraudeurs",
+    name: "Maraude Paris",
+    short_name: "Maraude Paris",
     description:
-      "Retrouvez les maraudes solidaires à Paris : Emmaüs, La Chorba, Aurore, Samu Social, Enfants du Canal.",
+      "La carte des maraudes solidaires à Paris : Emmaüs, La Chorba, Aurore, Samu Social, Enfants du Canal.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

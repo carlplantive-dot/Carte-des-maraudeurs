@@ -4,13 +4,13 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
-  title: "La Carte des Maraudeurs – Paris",
+  title: "Maraude Paris – La carte des maraudes solidaires",
   description:
-    "Retrouvez les maraudes solidaires à Paris : Emmaüs Solidarité, La Chorba, Aurore, Samu Social, Les Enfants du Canal.",
+    "La carte des maraudes solidaires à Paris : Emmaüs Solidarité, La Chorba, Aurore, Samu Social, Les Enfants du Canal.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Maraudeurs",
+    title: "Maraude Paris",
   },
   formatDetection: { telephone: false },
   other: {

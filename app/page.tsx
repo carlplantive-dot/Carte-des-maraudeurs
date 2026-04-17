@@ -125,10 +125,10 @@ export default function HomePage() {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold leading-tight tracking-wide">
-              La Carte des Maraudeurs
+              Maraude Paris
             </h1>
             <p className="text-white/70 text-[11px] mt-0.5">
-              Solidarité dans les rues de Paris
+              La carte des maraudes solidaires
             </p>
           </div>
 
@@ -376,7 +376,7 @@ export default function HomePage() {
 
       {/* Pied de page desktop */}
       <footer className="hidden sm:block flex-shrink-0 bg-cream border-t border-warm-border text-warm-mid text-[10px] text-center py-2 tracking-wide">
-        La Carte des Maraudeurs — Maraudes solidaires à Paris
+        Maraude Paris — La carte des maraudes solidaires
       </footer>
     </div>
   );
