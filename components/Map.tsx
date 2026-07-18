@@ -7,40 +7,38 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster";
 import { Maraude } from "@/types/maraude";
-import { ASSOCIATION_COLORS } from "@/lib/associations";
+import { getCategorie, CATEGORIES } from "@/lib/categories";
 
-function makeIcon(color: string, selected = false) {
-  const glow = selected ? `filter="url(#glow)"` : "";
+function makeIcon(maraude: Maraude, selected = false) {
+  const cat = getCategorie(maraude);
+  const { color, icon } = CATEGORIES[cat];
+  const size = selected ? 36 : 30;
+  const shadow = selected
+    ? `filter: drop-shadow(0 0 6px ${color}99);`
+    : `filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));`;
+
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
-      <defs>
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 20 12 20S24 21 24 12C24 5.373 18.627 0 12 0z"
-        fill="${color}" stroke="#c8a84b" stroke-width="${selected ? 2 : 1.5}" ${glow}/>
-      <circle cx="12" cy="12" r="5" fill="white" opacity="0.9"/>
-    </svg>
-  `;
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size + 8}" viewBox="0 0 30 38" style="${shadow}">
+      <path d="M15 0C8.37 0 3 5.37 3 12c0 8.5 12 26 12 26S27 20.5 27 12C27 5.37 21.63 0 15 0z"
+        fill="${color}" stroke="white" stroke-width="${selected ? 2.5 : 2}"/>
+      <circle cx="15" cy="12" r="8" fill="white" opacity="0.95"/>
+      <text x="15" y="16.5" text-anchor="middle" font-size="10" font-family="system-ui">${icon}</text>
+    </svg>`;
+
   return L.divIcon({
     html: svg,
     className: "",
-    iconSize: [24, 32],
-    iconAnchor: [12, 32],
-    popupAnchor: [0, -34],
+    iconSize: [size, size + 8],
+    iconAnchor: [size / 2, size + 8],
+    popupAnchor: [0, -(size + 10)],
   });
 }
 
-// User location icon
 const userIcon = L.divIcon({
   html: `<div style="
     width:16px;height:16px;
-    background:#2563eb;
-    border:3px solid white;
-    border-radius:50%;
-    box-shadow:0 0 0 3px rgba(37,99,235,0.3);
+    background:#2563eb;border:3px solid white;border-radius:50%;
+    box-shadow:0 0 0 4px rgba(37,99,235,0.2);
   "></div>`,
   className: "",
   iconSize: [16, 16],
@@ -55,20 +53,13 @@ interface MapProps {
   onMapReady?: (map: L.Map) => void;
 }
 
-export default function Map({
-  maraudes,
-  onMaraudeClick,
-  selectedId,
-  userLocation,
-  onMapReady,
-}: MapProps) {
+export default function Map({ maraudes, onMaraudeClick, selectedId, userLocation, onMapReady }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<globalThis.Map<number, L.Marker>>(new globalThis.Map());
   const userMarkerRef = useRef<L.Marker | null>(null);
 
-  // Init map once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -80,33 +71,30 @@ export default function Map({
 
     L.control.zoom({ position: "topright" }).addTo(map);
 
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 20,
-      }
-    ).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 20,
+    }).addTo(map);
 
-    // Marker cluster group with custom styling
     const cluster = (L as unknown as { markerClusterGroup: (opts: object) => L.MarkerClusterGroup }).markerClusterGroup({
-      maxClusterRadius: 50,
+      maxClusterRadius: 45,
       iconCreateFunction: (c: L.MarkerCluster) => {
         const count = c.getChildCount();
+        const big = count >= 20;
+        const sz = big ? 44 : 36;
         return L.divIcon({
           html: `<div style="
-            background:#C0622F;color:#fff;
-            width:36px;height:36px;border-radius:50%;
+            background:#C0622F;color:white;
+            width:${sz}px;height:${sz}px;border-radius:50%;
             display:flex;align-items:center;justify-content:center;
-            font-size:13px;font-weight:700;
-            border:2px solid #fff;
-            box-shadow:0 2px 8px rgba(192,98,47,0.5);
+            font-size:${big ? 14 : 12}px;font-weight:700;
+            border:2.5px solid white;
+            box-shadow:0 3px 10px rgba(192,98,47,0.45);
           ">${count}</div>`,
           className: "",
-          iconSize: [36, 36],
-          iconAnchor: [18, 18],
+          iconSize: [sz, sz],
+          iconAnchor: [sz / 2, sz / 2],
         });
       },
       spiderfyOnMaxZoom: true,
@@ -120,35 +108,21 @@ export default function Map({
     mapRef.current = map;
     onMapReady?.(map);
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      clusterRef.current = null;
-    };
+    return () => { map.remove(); mapRef.current = null; clusterRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync markers with current filtered list
   useEffect(() => {
     const cluster = clusterRef.current;
     if (!cluster) return;
-
     const currentIds = new Set(maraudes.map((m) => m.id));
-
-    // Remove stale markers
     markersRef.current.forEach((marker, id) => {
-      if (!currentIds.has(id)) {
-        cluster.removeLayer(marker);
-        markersRef.current.delete(id);
-      }
+      if (!currentIds.has(id)) { cluster.removeLayer(marker); markersRef.current.delete(id); }
     });
-
-    // Add new markers
     maraudes.forEach((maraude) => {
       if (markersRef.current.has(maraude.id)) return;
-      const color = ASSOCIATION_COLORS[maraude.association] ?? "#2c3e50";
       const marker = L.marker([maraude.lat, maraude.lng], {
-        icon: makeIcon(color, false),
+        icon: makeIcon(maraude, false),
         title: maraude.nom,
       });
       marker.on("click", () => onMaraudeClick(maraude));
@@ -157,25 +131,19 @@ export default function Map({
     });
   }, [maraudes, onMaraudeClick]);
 
-  // Refresh selected marker icon
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
       const maraude = maraudes.find((m) => m.id === id);
       if (!maraude) return;
-      const color = ASSOCIATION_COLORS[maraude.association] ?? "#2c3e50";
-      marker.setIcon(makeIcon(color, id === selectedId));
+      marker.setIcon(makeIcon(maraude, id === selectedId));
     });
   }, [selectedId, maraudes]);
 
-  // User location marker
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-
-    if (userMarkerRef.current) {
-      userMarkerRef.current.remove();
-      userMarkerRef.current = null;
-    }
+    userMarkerRef.current?.remove();
+    userMarkerRef.current = null;
     if (userLocation) {
       userMarkerRef.current = L.marker(userLocation, { icon: userIcon })
         .addTo(map)
@@ -183,11 +151,5 @@ export default function Map({
     }
   }, [userLocation]);
 
-  return (
-    <div
-      ref={containerRef}
-      className="w-full h-full rounded-2xl overflow-hidden shadow-lg"
-      style={{ minHeight: "100%" }}
-    />
-  );
+  return <div ref={containerRef} className="w-full h-full" style={{ minHeight: "100%" }} />;
 }
