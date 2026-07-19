@@ -12,6 +12,9 @@ const OFFLINE_URL = "/offline";
 // Ressources pré-cachées à l'installation
 const PRECACHE_URLS = [
   "/",
+  "/aider",
+  "/aide",
+  "/carte",
   "/offline",
   "/icon-192.png",
   "/icon-512.png",

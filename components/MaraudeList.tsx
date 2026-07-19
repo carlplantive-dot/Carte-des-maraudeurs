@@ -8,11 +8,12 @@ interface MaraudeListProps {
   maraudes: Maraude[];
   selectedId: number | null;
   onSelect: (maraude: Maraude) => void;
+  onHover?: (maraude: Maraude | null) => void;
   search: string;
   onSearchChange: (v: string) => void;
 }
 
-export default function MaraudeList({ maraudes, selectedId, onSelect, search, onSearchChange }: MaraudeListProps) {
+export default function MaraudeList({ maraudes, selectedId, onSelect, onHover, search, onSearchChange }: MaraudeListProps) {
   return (
     <div className="flex flex-col h-full bg-cream">
       <div className="px-4 pt-4 pb-3 flex-shrink-0 border-b border-warm-border/50">
@@ -52,6 +53,8 @@ export default function MaraudeList({ maraudes, selectedId, onSelect, search, on
               <button
                 key={m.id}
                 onClick={() => onSelect(m)}
+                onMouseEnter={() => onHover?.(m)}
+                onMouseLeave={() => onHover?.(null)}
                 className={`w-full text-left bg-white rounded-2xl border overflow-hidden transition-all hover:shadow-md active:scale-[0.99] ${
                   isSelected
                     ? "border-brick/40 shadow-md ring-2 ring-brick/15"

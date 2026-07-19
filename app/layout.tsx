@@ -4,9 +4,9 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
-  title: "Maraude Paris – La carte des maraudes solidaires",
+  title: "Maraude Paris — La carte des actions solidaires",
   description:
-    "La carte des maraudes solidaires à Paris : Emmaüs Solidarité, La Chorba, Aurore, Samu Social, Les Enfants du Canal.",
+    "Trouvez une action solidaire près de chez vous : maraudes, repas, vestiaires, écoute, accompagnement social à Paris.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
