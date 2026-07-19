@@ -54,10 +54,8 @@ export default function AiderPage() {
   useEffect(() => {
     fetch("/api/maraudes")
       .then((res) => res.json())
-      .then((data: Maraude[]) => setMaraudes(data))
-      .catch(() => {
-        // fallback to static data — already set as initial state
-      });
+      .then((data) => { if (data.maraudes?.length) setMaraudes(data.maraudes); })
+      .catch(() => {});
   }, []);
 
   // Filtered list (memoised)
