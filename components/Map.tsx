@@ -9,18 +9,29 @@ import "leaflet.markercluster";
 import { Maraude } from "@/types/maraude";
 import { getCategorie, CATEGORIES } from "@/lib/categories";
 
-function makeIcon(maraude: Maraude, selected = false) {
+function makeIcon(maraude: Maraude, selected = false, dimmed = false, highlighted = false) {
   const cat = getCategorie(maraude);
   const { color, icon } = CATEGORIES[cat];
-  const size = selected ? 36 : 30;
-  const shadow = selected
-    ? `filter: drop-shadow(0 0 6px ${color}99);`
-    : `filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));`;
+  const fillColor = dimmed ? "#9CA3AF" : color;
+  const baseSize = selected ? 36 : 30;
+  const size = highlighted ? baseSize + 3 : baseSize;
+  const opacity = dimmed ? 0.35 : 1;
+
+  let shadow: string;
+  if (dimmed) {
+    shadow = `filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));`;
+  } else if (highlighted) {
+    shadow = `filter: drop-shadow(0 0 8px ${color}cc) drop-shadow(0 0 4px ${color}88);`;
+  } else if (selected) {
+    shadow = `filter: drop-shadow(0 0 6px ${color}99);`;
+  } else {
+    shadow = `filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));`;
+  }
 
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size + 8}" viewBox="0 0 30 38" style="${shadow}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size + 8}" viewBox="0 0 30 38" style="${shadow}" opacity="${opacity}">
       <path d="M15 0C8.37 0 3 5.37 3 12c0 8.5 12 26 12 26S27 20.5 27 12C27 5.37 21.63 0 15 0z"
-        fill="${color}" stroke="white" stroke-width="${selected ? 2.5 : 2}"/>
+        fill="${fillColor}" stroke="white" stroke-width="${selected ? 2.5 : 2}"/>
       <circle cx="15" cy="12" r="8" fill="white" opacity="0.95"/>
       <text x="15" y="16.5" text-anchor="middle" font-size="10" font-family="system-ui">${icon}</text>
     </svg>`;
@@ -51,9 +62,11 @@ interface MapProps {
   selectedId: number | null;
   userLocation: [number, number] | null;
   onMapReady?: (map: L.Map) => void;
+  allMaraudes?: Maraude[];
+  highlightedId?: number | null;
 }
 
-export default function Map({ maraudes, onMaraudeClick, selectedId, userLocation, onMapReady }: MapProps) {
+export default function Map({ maraudes, onMaraudeClick, selectedId, userLocation, onMapReady, allMaraudes, highlightedId }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
@@ -115,11 +128,12 @@ export default function Map({ maraudes, onMaraudeClick, selectedId, userLocation
   useEffect(() => {
     const cluster = clusterRef.current;
     if (!cluster) return;
-    const currentIds = new Set(maraudes.map((m) => m.id));
+    const displayList = allMaraudes ?? maraudes;
+    const displayIds = new Set(displayList.map((m) => m.id));
     markersRef.current.forEach((marker, id) => {
-      if (!currentIds.has(id)) { cluster.removeLayer(marker); markersRef.current.delete(id); }
+      if (!displayIds.has(id)) { cluster.removeLayer(marker); markersRef.current.delete(id); }
     });
-    maraudes.forEach((maraude) => {
+    displayList.forEach((maraude) => {
       if (markersRef.current.has(maraude.id)) return;
       const marker = L.marker([maraude.lat, maraude.lng], {
         icon: makeIcon(maraude, false),
@@ -129,15 +143,20 @@ export default function Map({ maraudes, onMaraudeClick, selectedId, userLocation
       cluster.addLayer(marker);
       markersRef.current.set(maraude.id, marker);
     });
-  }, [maraudes, onMaraudeClick]);
+  }, [maraudes, allMaraudes, onMaraudeClick]);
 
   useEffect(() => {
+    const activeIds = new Set(maraudes.map((m) => m.id));
+    const displayList = allMaraudes ?? maraudes;
     markersRef.current.forEach((marker, id) => {
-      const maraude = maraudes.find((m) => m.id === id);
+      const maraude = displayList.find((m) => m.id === id);
       if (!maraude) return;
-      marker.setIcon(makeIcon(maraude, id === selectedId));
+      const selected = id === selectedId;
+      const dimmed = allMaraudes !== undefined && !activeIds.has(id);
+      const highlighted = highlightedId !== null && highlightedId !== undefined && id === highlightedId;
+      marker.setIcon(makeIcon(maraude, selected, dimmed, highlighted));
     });
-  }, [selectedId, maraudes]);
+  }, [selectedId, highlightedId, maraudes, allMaraudes]);
 
   useEffect(() => {
     const map = mapRef.current;
